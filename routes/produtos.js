@@ -100,7 +100,7 @@ router.delete('/', (req, res, next) => {
                 const response = {
                     messagem: 'Produto removido com sucesso',
                     request: {
-                        tipo: 'POST',
+                        tipo: 'DELETE',
                         descricao: 'Apaga um produto',
                         url: 'http://localhost:3000/produtos/',
                         body: {
