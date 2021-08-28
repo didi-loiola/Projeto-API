@@ -6,16 +6,26 @@ router.get('/', (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            'select * from pedidos;',
+            `select pedidos.id_pedidos,
+                    pedidos.quantidade,
+                    produtos.id_produtos,
+                    produtos.nome,
+                    produtos.preco
+               from pedidos
+         inner join produtos
+                on  produtos.id_produtos = pedidos.id_produtos`,
             (error, result, fields) => {
                 if (error) { return res.status(500).send({ error: error }) }
                 const response = {
-                    quantidade: result.length,
                     pedidos: result.map(pedido => {
                         return {
                             id_pedido: pedido.id_pedidos,
-                            id_produto: pedido.id_produtos,
                             quantidade: pedido.quantidade,
+                            produto: {
+                                id_produto: pedido.id_produtos,
+                                nome: pedido.nome,
+                                preco: pedido.preco
+                            },
                             request: {
                                 tipo: 'GET',
                                 descricao: 'Retorna detalhes de um pedido específico',
