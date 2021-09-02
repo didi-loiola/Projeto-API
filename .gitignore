@@ -1,4 +1,5 @@
 node_modules
 *.mwb
+*.bak
 nodemon.json
 uploads
