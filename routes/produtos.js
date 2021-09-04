@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('../mysql').pool;
 const multer = require('multer');
+const login = require('../middleware/login');
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads/');
@@ -55,8 +56,7 @@ router.get('/', (req, res, next) => {
 
 })
 
-router.post('/', upload.single('produto_imagem'), (req, res, next) => {
-    console.log(req.file);
+router.post('/', login.obrigatorio, upload.single('produto_imagem'), (req, res, next) => {
     mysql.getConnection((error, conn) => {
         conn.query(
             'INSERT INTO produtos(nome, preco, imagem_produto) values (?,?,?)', [
@@ -120,7 +120,7 @@ router.get('/:id_produto', (req, res, next) => {
     })
 })
 
-router.delete('/', (req, res, next) => {
+router.delete('/', login.obrigatorio, (req, res, next) => {
     mysql.getConnection((error, conn) => {
         conn.query(
             `delete from produtos where id_produtos= ?`, [req.body.id_produto],
@@ -146,7 +146,7 @@ router.delete('/', (req, res, next) => {
     })
 })
 
-router.patch('/', (req, res, next) => {
+router.patch('/', login.obrigatorio, (req, res, next) => {
     mysql.getConnection((error, conn) => {
         conn.query(
             `update produtos
@@ -162,7 +162,7 @@ router.patch('/', (req, res, next) => {
 
                 if (error) { return res.status(500).send({ error: error }) }
                 const response = {
-                    mensagem: 'Produto inserido com sucesso',
+                    mensagem: 'Produto atualizado com sucesso',
                     produtoAtualizado: {
                         id_produto: req.body.id_produtos,
                         nome: req.body.nome,
