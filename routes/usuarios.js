@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const usuario = require('../controllers/usuario')
 
-router.post('/cadastro', usuario.cadastroUsuario);
-router.post('/login', usuario.logarUsuario);
+router.post('/cadastro', usuarios.cadastroUsuario);
+router.post('/login', usuarios.logarUsuario);
 
 module.exports = router;
