@@ -18,7 +18,7 @@ exports.getProdutos = (req, res, next) => {
                             request: {
                                 tipo: 'GET',
                                 descricao: 'Retorna detalhes de um produto específico',
-                                url: 'http://localhost:3000/produtos/' + prod.id_produtos
+                                url: process.env.URL_API + '/produtos/' + prod.id_produtos
                             }
                         }
                     })
@@ -52,7 +52,7 @@ exports.postProdutos = (req, res, next) => {
                         request: {
                             tipo: 'POST',
                             descricao: 'Insere um produto',
-                            url: 'http://localhost:3000/produtos/'
+                            url: process.env.URL_API + '/produtos/'
                         }
                     }
                 }
@@ -84,7 +84,7 @@ exports.getProdutoUnico = (req, res, next) => {
                         request: {
                             tipo: 'GET',
                             descricao: 'Retorna um produto',
-                            url: 'http://localhost:3000/produtos/'
+                            url: process.env.URL_API + '/produtos/'
                         }
                     }
                 }
@@ -107,7 +107,7 @@ exports.deleteProduto = (req, res, next) => {
                     request: {
                         tipo: 'DELETE',
                         descricao: 'Apaga um produto',
-                        url: 'http://localhost:3000/produtos/',
+                        url: process.env.URL_API + '/produtos/',
                         body: {
                             nome: 'String',
                             preco: 'Number'
@@ -144,7 +144,7 @@ exports.patchProduto = (req, res, next) => {
                         request: {
                             tipo: 'PATCH',
                             descricao: 'Atualiza um produto',
-                            url: 'http://localhost:3000/produtos/' + req.body.id_produto
+                            url: process.env.URL_API + '/produtos/' + req.body.id_produto
                         }
                     }
                 }
