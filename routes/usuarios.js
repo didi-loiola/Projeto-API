@@ -3,7 +3,7 @@ const router = express.Router();
 const mysql = require('../mysql').pool;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const usuario = require('../controllers/usuario')
+const usuario = require('../controllers/usuarios')
 
 router.post('/cadastro', usuario.cadastroUsuario);
 router.post('/login', usuario.logarUsuario);
