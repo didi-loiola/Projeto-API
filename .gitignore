@@ -4,3 +4,4 @@ node_modules
 nodemon.json
 uploads/*.jpg
 uploads/*.png
+database
