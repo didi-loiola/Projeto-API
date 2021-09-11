@@ -25,10 +25,10 @@ exports.getProdutos = async(req, res, next) => {
     }
 }
 
-exports.postProdutos = (req, res, next) => {
+exports.postProdutos = async(req, res, next) => {
     try {
         const query = 'INSERT INTO produtos(nome, preco, imagem_produto) values (?,?,?)';
-        const result = mysql.execute(query, [
+        const result = await mysql.execute(query, [
             req.body.nome,
             req.body.preco,
             req.file.path
@@ -126,6 +126,53 @@ exports.patchProduto = async(req, res, next) => {
             }
         }
         return res.status(202).send(response)
+    } catch (error) {
+        return res.status(500).send({ error: error })
+    }
+}
+
+exports.postImagem = async(req, res, next) => {
+    try {
+        const query = 'INSERT INTO imagens_produtos(id_produtos, caminho) values (?,?)';
+        const result = await mysql.execute(query, [
+            req.params.id_produto,
+            req.file.path
+        ])
+        const response = {
+            mensagem: 'Imagem inserida com sucesso',
+            imagemCriada: {
+                id_produto: parseInt(req.params.id_produto),
+                id_imagem: result.insertId,
+                imagem_produto: req.file.path,
+                request: {
+                    tipo: 'GET',
+                    descricao: 'Retorna todas imagens',
+                    url: process.env.URL_API + '/produtos/' + req.params.id_produto + '/imagens'
+                }
+            }
+        }
+        return res.status(201).send(response)
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send({ error: error, })
+    }
+}
+
+exports.getImagens = async(req, res, next) => {
+    try {
+        const query = "select * from imagens_produtos where id_produtos=?;"
+        const result = await mysql.execute(query, [req.params.id_produto]);
+        const response = {
+            quantidade: result.length,
+            imagens: result.map(img => {
+                return {
+                    id_produto: parseInt(req.params.id_produto),
+                    id_imagem: img.id_imagem,
+                    caminho: process.env.URL_API + img.caminho,
+                }
+            })
+        }
+        return res.status(200).send(response)
     } catch (error) {
         return res.status(500).send({ error: error })
     }
