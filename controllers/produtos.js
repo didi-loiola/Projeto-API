@@ -2,7 +2,12 @@ const mysql = require('../mysql');
 
 exports.getProdutos = async(req, res, next) => {
     try {
-        const result = await mysql.execute("select * from produtos;")
+        let nome = ''
+        if (req.query.nome) {
+            nome = req.query.nome;
+        }
+        const query = `select * from produtos where id_categoria=? and (nome like '%${nome}%')`;
+        const result = await mysql.execute(query, [req.query.id_categoria])
         const response = {
             quantidade: result.length,
             produtos: result.map(prod => {
@@ -27,11 +32,12 @@ exports.getProdutos = async(req, res, next) => {
 
 exports.postProdutos = async(req, res, next) => {
     try {
-        const query = 'INSERT INTO produtos(nome, preco, imagem_produto) values (?,?,?)';
+        const query = 'INSERT INTO produtos(nome, preco, imagem_produto, id_categoria) values (?,?,?,?)';
         const result = await mysql.execute(query, [
             req.body.nome,
             req.body.preco,
-            req.file.path
+            req.file.path,
+            req.body.id_categoria
         ])
         const response = {
             mensagem: 'Produto inserido com sucesso',
@@ -40,6 +46,7 @@ exports.postProdutos = async(req, res, next) => {
                 nome: req.body.nome,
                 preco: req.body.preco,
                 imagem_produto: req.file.path,
+                id_categoria: parseInt(req.body.id_categoria),
                 request: {
                     tipo: 'POST',
                     descricao: 'Insere um produto',
