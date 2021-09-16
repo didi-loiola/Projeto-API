@@ -5,3 +5,4 @@ nodemon.json
 uploads/*.jpg
 uploads/*.png
 database
+.vscode
