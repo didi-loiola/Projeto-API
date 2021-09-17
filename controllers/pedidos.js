@@ -3,14 +3,14 @@ const mysql = require('../mysql');
 exports.getPedidos = async(req, res, next) => {
     try {
         const result = await mysql.execute(
-            `select pedidos.id_pedidos,
+            `SELECT pedidos.id_pedidos,
                     pedidos.quantidade,
                     produtos.id_produtos,
                     produtos.nome,
                     produtos.preco
-               from pedidos
-            inner join produtos
-                on  produtos.id_produtos = pedidos.id_produtos`);
+               FROM pedidos
+         INNER JOIN produtos
+                ON  produtos.id_produtos = pedidos.id_produtos`);
         const response = {
             pedidos: result.map(pedido => {
                 return {
@@ -37,18 +37,21 @@ exports.getPedidos = async(req, res, next) => {
 
 exports.postPedidos = async(req, res, next) => {
     try {
-        const result = await mysql.execute('select * from produtos where id_produtos=?', [req.body.id_produto]);
-        if (result.length == 0) {
+        const queryProduto = 'SELECT * FROM produtos WHERE id_produtos=?'
+        const resultProduto = await mysql.execute(queryProduto, [req.body.id_produto]);
+        if (resultProduto.length == 0) {
             return res.status(404).send({
                 mensagem: 'Produto não encontrado'
             })
         }
+        const queryPedido = 'INSERT INTO pedidos(id_produtos,quantidade) VALUES (?,?)'
+        const result = await mysql.execute(queryPedido, [req.body.id_produtos, req.body.quantidade]);
         const response = {
             mensagem: 'Pedido inserido com sucesso',
             pedidoCriado: {
                 id_pedido: result.id_pedidos,
                 id_produto: req.body.id_produtos,
-                quantidade: req.body.nome,
+                quantidade: req.body.quantidade,
                 request: {
                     tipo: 'POST',
                     descricao: 'Insere um pedido',
@@ -64,7 +67,8 @@ exports.postPedidos = async(req, res, next) => {
 
 exports.getPedidoUnico = async(req, res, next) => {
     try {
-        const result = await mysql.execute('select * from pedidos where id_pedidos=?;', [req.params.id_pedido]);
+        const query = 'SELECT * FROM pedidos WHERE id_pedidos=?;'
+        const result = await mysql.execute(query, [req.params.id_pedido]);
         if (result.length == 0) {
             return res.status(404).send({
                 mensagem: 'Não foi encontrado pedido com esse id.'
@@ -90,7 +94,8 @@ exports.getPedidoUnico = async(req, res, next) => {
 
 exports.deletePedido = async(req, res, next) => {
     try {
-        await mysql.execute(`delete from pedidos where id_pedidos= ?`, [req.body.id_pedidos]);
+        const query = `DELETE FROM pedidos WHERE id_pedidos= ?`
+        await mysql.execute(query, [req.body.id_pedidos]);
         const response = {
             messagem: 'Pedido removido com sucesso',
             request: {
