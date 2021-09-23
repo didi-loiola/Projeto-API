@@ -4,24 +4,24 @@ const jwt = require('jsonwebtoken');
 
 exports.cadastroUsuario = async(req, res, next) => {
     try {
-        const queryVerificaUsuario = `SELECT * FROM usuarios WHERE email=?`;
-        const queryVerificacao = await mysql.execute(queryVerificaUsuario, [req.body.email]);
-        if (queryVerificacao.length > 0) {
-            res.status(409).send({ mensagem: 'Usuário já cadastrado' })
-        }
-        const hash = await bcrypt.hashSync(req.body.senha, 10);
+        //const queryVerificaUsuario = `SELECT * FROM usuarios WHERE email=?`;
+        //const queryVerificacao = await mysql.execute(queryVerificaUsuario, [req.body.email]);
+        //if (queryVerificacao.length > 0) {
+        //    res.status(409).send({ mensagem: 'Usuário já cadastrado' })
+        //}
+        //const hash = await bcrypt.hashSync(req.body.senha, 10);
 
-        const queryInserirUsuario = `insert into usuarios (email, senha) values (?,?)`;
-        const resultUsuario = await mysql.execute(queryInserirUsuario, [req.body.email, hash]);
+        const users = req.body.users.map(user => [
+            user.email,
+            bcrypt.hashSync(user.senha, 10)
+        ])
+
+        const queryInserirUsuario = `insert into usuarios (email, senha) values ?`;
+        const resultUsuario = await mysql.execute(queryInserirUsuario, [users]);
 
         const response = {
             mensagem: 'Usuário criado com sucesso',
-            usuarioCriado: {
-                id_usuario: resultUsuario.insertId,
-                email: req.body.email,
-                hash: hash,
-                password: req.body.senha
-            }
+            usuariosCriados: req.body.users.map(user => { return { email: user.email } })
         }
         return res.status(201).send(response);
 
